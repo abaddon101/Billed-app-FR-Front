@@ -1,3 +1,5 @@
+/* global onNavigate */
+
 import store from "./Store.js"
 import Login, { PREVIOUS_LOCATION } from "../containers/Login.js"
 import Bills  from "../containers/Bills.js"
@@ -60,7 +62,7 @@ export default () => {
     }
   }
 
-  window.onpopstate = (e) => {
+  window.onpopstate = () => {
     const user = JSON.parse(localStorage.getItem('user'))
     if (window.location.pathname === "/" && !user) {
       document.body.style.backgroundColor="#0E5AE5"
