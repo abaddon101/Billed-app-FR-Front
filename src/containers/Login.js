@@ -21,7 +21,6 @@ export default class Login {
     this.document = document;
     this.localStorage = localStorage;
     this.onNavigate = onNavigate;
-    // Redéfinit PREVIOUS_LOCATION, peut-être une erreur ici
     PREVIOUS_LOCATION = "";
     this.store = store;
 
