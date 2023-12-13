@@ -22,8 +22,15 @@ const row = (bill) => {
 
 // Fonction pour générer le HTML de toutes les lignes (rows) à partir des données fournies
 const rows = (data) => {
-  // Vérification si les données existent et ont une longueur non nulle
-  return data && data.length ? data.map((bill) => row(bill)).join("") : "";
+  console.log(data);
+  if (data && data.length) {
+    // Trie les données par date dans l'ordre décroissant
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+    // Map chaque facture à une ligne HTML et les joint ensemble
+    return data.map((bill) => row(bill)).join("");
+  } else {
+    return "";
+  }
 };
 
 // Fonction principale exportée sous forme de composant React
