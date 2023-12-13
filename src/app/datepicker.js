@@ -173,17 +173,17 @@ class Datepicker {
               (t.firstdate == undefined
                 ? true
                 : day.getMonth() == t.firstdate.getMonth()
-                ? day.getFullYear() == t.firstdate.getFullYear()
-                  ? day.getDate() >= t.firstdate.getDate()
-                  : true
-                : true) &&
+                  ? day.getFullYear() == t.firstdate.getFullYear()
+                    ? day.getDate() >= t.firstdate.getDate()
+                    : true
+                  : true) &&
               (t.lastdate == undefined
                 ? true
                 : day.getMonth() == t.lastdate.getMonth()
-                ? day.getFullYear() == t.lastdate.getFullYear()
-                  ? day.getDate() <= t.lastdate.getDate()
-                  : true
-                : true)
+                  ? day.getFullYear() == t.lastdate.getFullYear()
+                    ? day.getDate() <= t.lastdate.getDate()
+                    : true
+                  : true)
             ) {
               td.className = "pointer";
               td.onclick = () => {
@@ -315,14 +315,14 @@ class Datepicker {
             ? d
             : this.firstdate
           : this.firstdate
-          ? d.getTime() >= this.firstdate.getTime()
-            ? d
-            : this.firstdate
-          : this.lastdate
-          ? d.getTime() <= this.lastdate.getTime()
-            ? d
+            ? d.getTime() >= this.firstdate.getTime()
+              ? d
+              : this.firstdate
             : this.lastdate
-          : d;
+              ? d.getTime() <= this.lastdate.getTime()
+                ? d
+                : this.lastdate
+              : d;
       d.setTime(d.getTime() + DAY);
     }
     this.date = this.date || date;

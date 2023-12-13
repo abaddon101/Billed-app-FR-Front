@@ -1,9 +1,10 @@
+// Importation des composants nécessaires
 import VerticalLayout from "./VerticalLayout.js";
 import ErrorPage from "./ErrorPage.js";
 import LoadingPage from "./LoadingPage.js";
-
 import Actions from "./Actions.js";
 
+// Fonction pour générer le HTML d'une ligne (row) représentant une facture
 const row = (bill) => {
   return `
     <tr>
@@ -16,14 +17,18 @@ const row = (bill) => {
         ${Actions(bill.fileUrl)}
       </td>
     </tr>
-    `;
+  `;
 };
 
+// Fonction pour générer le HTML de toutes les lignes (rows) à partir des données fournies
 const rows = (data) => {
+  // Vérification si les données existent et ont une longueur non nulle
   return data && data.length ? data.map((bill) => row(bill)).join("") : "";
 };
 
+// Fonction principale exportée sous forme de composant React
 export default ({ data: bills, loading, error }) => {
+  // Fonction pour générer le HTML de la modale
   const modal = () => `
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -41,12 +46,15 @@ export default ({ data: bills, loading, error }) => {
     </div>
   `;
 
+  // Si la page est en cours de chargement, afficher la page de chargement
   if (loading) {
     return LoadingPage();
   } else if (error) {
+    // Si une erreur est survenue, afficher la page d'erreur avec le message d'erreur
     return ErrorPage(error);
   }
 
+  // Si les données sont disponibles, générer le HTML de la page
   return `
     <div class='layout'>
       ${VerticalLayout(120)}
@@ -56,8 +64,8 @@ export default ({ data: bills, loading, error }) => {
           <button type="button" data-testid='btn-new-bill' class="btn btn-primary">Nouvelle note de frais</button>
         </div>
         <div id="data-table">
-        <table id="example" class="table table-striped" style="width:100%">
-          <thead>
+          <table id="example" class="table table-striped" style="width:100%">
+            <thead>
               <tr>
                 <th>Type</th>
                 <th>Nom</th>
@@ -66,10 +74,10 @@ export default ({ data: bills, loading, error }) => {
                 <th>Statut</th>
                 <th>Actions</th>
               </tr>
-          </thead>
-          <tbody data-testid="tbody">
-            ${rows(bills)}
-          </tbody>
+            </thead>
+            <tbody data-testid="tbody">
+              ${rows(bills)}
+            </tbody>
           </table>
         </div>
       </div>

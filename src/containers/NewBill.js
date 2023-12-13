@@ -1,33 +1,64 @@
+// Importation de la constante ROUTES_PATH depuis le module routes.js et de la classe Logout depuis Logout.js
 import { ROUTES_PATH } from "../constants/routes.js";
 import Logout from "./Logout.js";
 
+// Classe NewBill représentant la création d'une nouvelle facture
 export default class NewBill {
+  // Constructeur de la classe prenant en paramètre un objet contenant document, onNavigate, store et localStorage
   constructor({ document, onNavigate, store, localStorage }) {
+    // Initialisation des propriétés de la classe avec les valeurs fournies en paramètre
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
+
+    // Récupération de l'élément de formulaire "form-new-bill" et ajout d'un gestionnaire d'événement sur la soumission du formulaire
     const formNewBill = this.document.querySelector(
       `form[data-testid="form-new-bill"]`
     );
     formNewBill.addEventListener("submit", this.handleSubmit);
+
+    // Récupération de l'élément d'entrée de fichier "file" et ajout d'un gestionnaire d'événement sur le changement de fichier
     const file = this.document.querySelector(`input[data-testid="file"]`);
     file.addEventListener("change", this.handleChangeFile);
+
+    // Initialisation des propriétés liées au fichier de facture
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
+
+    // Instanciation de la classe Logout pour gérer la déconnexion
     new Logout({ document, localStorage, onNavigate });
   }
+
+  // Méthode appelée lorsqu'un fichier est sélectionné
   handleChangeFile = (e) => {
     e.preventDefault();
-    const file = this.document.querySelector(`input[data-testid="file"]`)
-      .files[0];
-    const filePath = e.target.value.split(/\\/g);
-    const fileName = filePath[filePath.length - 1];
+    // Récupération du fichier depuis l'élément d'entrée de fichier
+    const fileInput = this.document.querySelector(`input[data-testid="file"]`);
+    const file = fileInput.files[0];
+    // debugger;
+    // Vérification de l'extension du fichier
+    const allowedExtensions = ["jpg", "jpeg", "png"];
+    const fileName = fileInput.value.split(/(\\|\/)/g).pop();
+    const fileExtension = fileName.split(".").pop().toLowerCase();
+
+    if (!allowedExtensions.includes(fileExtension)) {
+      console.error(
+        "Extension de fichier non autorisée. Veuillez sélectionner un fichier jpg, jpeg ou png."
+      );
+      console.log(
+        "Extension de fichier non autorisée. Veuillez sélectionner un fichier jpg, jpeg ou png."
+      );
+      return;
+    }
+
+    // Création d'un objet FormData pour envoyer le fichier et l'e-mail de l'utilisateur au serveur
     const formData = new FormData();
     const email = JSON.parse(localStorage.getItem("user")).email;
     formData.append("file", file);
     formData.append("email", email);
 
+    // Envoi de la requête POST pour créer la facture avec le fichier
     this.store
       .bills()
       .create({
@@ -37,6 +68,7 @@ export default class NewBill {
         },
       })
       .then(({ fileUrl, key }) => {
+        // Traitement de la réponse et mise à jour des propriétés liées au fichier de facture
         console.log(fileUrl);
         this.billId = key;
         this.fileUrl = fileUrl;
@@ -44,12 +76,11 @@ export default class NewBill {
       })
       .catch((error) => console.error(error));
   };
+
+  // Méthode appelée lorsqu'un formulaire est soumis
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    );
+    // Récupération des valeurs du formulaire pour créer une nouvelle facture
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
       email,
@@ -69,17 +100,23 @@ export default class NewBill {
       fileName: this.fileName,
       status: "pending",
     };
+
+    // Appel de la méthode pour mettre à jour la facture
     this.updateBill(bill);
+
+    // Redirection vers la page des factures après la création
     this.onNavigate(ROUTES_PATH["Bills"]);
   };
 
-  // not need to cover this function by tests
+  // Méthode pour mettre à jour la facture
   updateBill = (bill) => {
     if (this.store) {
+      // Appel de la méthode d'API pour mettre à jour la facture
       this.store
         .bills()
         .update({ data: JSON.stringify(bill), selector: this.billId })
         .then(() => {
+          // Redirection vers la page des factures après la mise à jour
           this.onNavigate(ROUTES_PATH["Bills"]);
         })
         .catch((error) => console.error(error));

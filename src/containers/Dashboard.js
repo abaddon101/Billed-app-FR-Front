@@ -160,7 +160,7 @@ export default class {
   // Fonction qui gère l'affichage des tickets en fonction de certains événements
   handleShowTickets(e, bills, index) {
     console.log("event handleShowTicket"); // Affiche un message dans la console pour indiquer le début de la fonction
-
+    // debugger;
     // Vérifie si la variable counter n'est pas définie ou si l'index est différent, puis initialise counter à 0
     if (this.counter === undefined || this.index !== index) this.counter = 0;
 
@@ -183,7 +183,6 @@ export default class {
       this.counter++;
     }
 
-   
     console.log("Counter:", this.counter); // Affiche la valeur actuelle de counter dans la console
     console.log("Index:", this.index); // Affiche la valeur actuelle de l'index dans la console
 
