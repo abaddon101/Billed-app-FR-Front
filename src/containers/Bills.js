@@ -11,7 +11,9 @@ export default class {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-
+    // Assurez-vous que handleClickNewBill et handleClickIconEye sont liés à l'instance de Bills
+    this.handleClickNewBill = this.handleClickNewBill.bind(this);
+    this.handleClickIconEye = this.handleClickIconEye.bind(this);
     // Recherche du bouton "New Bill" dans le document et ajout d'un gestionnaire d'événement au clic
     const buttonNewBill = document.querySelector(
       `button[data-testid="btn-new-bill"]`

@@ -4,14 +4,19 @@
 
 // Importation des modules et composants nécessaires pour les tests
 import { screen, waitFor } from "@testing-library/dom";
+
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import BillsUI from "../views/BillsUI.js";
+import Bills from "../containers/Bills.js";
 import { bills } from "../fixtures/bills.js";
-import { ROUTES_PATH } from "../constants/routes.js";
+import { ROUTES, ROUTES_PATH } from "../constants/routes.js";
 import { localStorageMock } from "../__mocks__/localStorage.js";
+import mockStore from "../__mocks__/store";
 
 import router from "../app/Router.js";
 
+jest.mock("../app/store", () => mockStore);
 // Description des tests pour le contexte où l'utilisateur est connecté en tant qu'employé
 describe("Given I am connected as an employee", () => {
   // Description du premier test : Lorsque je suis sur la page des factures
@@ -43,16 +48,12 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
 
       // Attente de l'affichage de l'icône de la fenêtre
-      console.log("Before waiting for icon");
+
       await waitFor(() => {
         const windowIcon = screen.getByTestId("icon-window");
-        console.log("Icon found:", windowIcon);
         expect(windowIcon).toBeInTheDocument();
         expect(windowIcon).toHaveClass("active-icon");
       });
-      console.log("After waiting for icon");
-
-      // À faire : écrire l'expression expect
     });
 
     // Deuxième sous-test : Les factures devraient être triées du plus ancien au plus récent
@@ -75,6 +76,53 @@ describe("Given I am connected as an employee", () => {
 
       // Vérification que les dates dans l'interface utilisateur sont triées correctement
       expect(dates).toEqual(datesSorted);
+    });
+
+    test("Then button btn-new-bill should allow to navigate to NewBill", async () => {
+      // Création d'un espion (spy) pour la fonction onNavigate
+      const onNavigate = jest.fn((pathname) => {
+        document.body.innerHTML = ROUTES({ pathname });
+      });
+
+      // Configuration de l'objet localStorage pour le test
+      Object.defineProperty(window, "localStorage", {
+        value: localStorageMock,
+      });
+
+      // Ajout d'un utilisateur simulé dans le localStorage
+      window.localStorage.setItem(
+        "user",
+        JSON.stringify({
+          type: "Employee",
+        })
+      );
+
+      // Initialisation de Bills avec la fonction mock pour handleClickNewBill
+      const bills = new Bills({
+        document,
+        onNavigate, // Utilisation de l'espion (spy) ici
+        localStorage: window.localStorage,
+      });
+
+      // Injection du HTML simulé dans le corps du document
+      document.body.innerHTML = BillsUI({ data: bills });
+
+      const handleClickNewBillTest = jest.fn((e) => bills.handleClickNewBill());
+
+      // Récupération des éléments DOM
+      const buttonNewBill = screen.getByTestId("btn-new-bill");
+
+      // Ajout d'un écouteur d'événements pour le clic
+      buttonNewBill.addEventListener("click", handleClickNewBillTest);
+
+      // Simulation du clic
+      userEvent.click(buttonNewBill);
+
+      // Vérification que la fonction associée au clic a été appelée
+      expect(handleClickNewBillTest).toHaveBeenCalled();
+
+      // Vérification que l'espion (spy) onNavigate a été appelé avec les bons arguments
+      expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
     });
   });
 });
