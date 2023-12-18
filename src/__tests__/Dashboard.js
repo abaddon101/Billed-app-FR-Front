@@ -328,28 +328,50 @@ describe("Given I am connected as Admin and I am on Dashboard page and I clicked
 describe("Given I am a user connected as Admin", () => {
   describe("When I navigate to Dashboard", () => {
     test("fetches bills from mock API GET", async () => {
+      // Prépare l'état de l'utilisateur en tant qu'administrateur connecté
       localStorage.setItem(
         "user",
         JSON.stringify({ type: "Admin", email: "a@a" })
       );
+
+      // Crée un élément de div en tant que point d'ancrage pour l'application
       const root = document.createElement("div");
       root.setAttribute("id", "root");
       document.body.append(root);
+
+      // Initialise le router 
       router();
+
+      // Simule la navigation vers le tableau de bord
       window.onNavigate(ROUTES_PATH.Dashboard);
+
+      // Attend que le texte "Validations" soit rendu à l'écran
       await waitFor(() => screen.getByText("Validations"));
+
+      // Vérifie que le contenu en attente est présent
       const contentPending = await screen.getByText("En attente (1)");
       expect(contentPending).toBeTruthy();
+
+      // Vérifie que le contenu refusé est présent
       const contentRefused = await screen.getByText("Refusé (2)");
       expect(contentRefused).toBeTruthy();
+
+      // Vérifie la présence d'un élément avec l'attribut de test "big-billed-icon"
       expect(screen.getByTestId("big-billed-icon")).toBeTruthy();
     });
+
+    // Suite de tests pour gérer les erreurs de l'API
     describe("When an error occurs on API", () => {
       beforeEach(() => {
+        // Espionne la méthode "bills" de l'objet mockStore
         jest.spyOn(mockStore, "bills");
+
+        // Remplace l'objet localStorage par un objet de mock
         Object.defineProperty(window, "localStorage", {
           value: localStorageMock,
         });
+
+        // Initialise l'utilisateur en tant qu'administrateur connecté
         window.localStorage.setItem(
           "user",
           JSON.stringify({
@@ -357,12 +379,19 @@ describe("Given I am a user connected as Admin", () => {
             email: "a@a",
           })
         );
+
+        // Crée un élément de div en tant que point d'ancrage pour l'application
         const root = document.createElement("div");
         root.setAttribute("id", "root");
         document.body.appendChild(root);
+
+        // Initialise le router 
         router();
       });
+
+      // Teste la gestion d'une erreur 404 lors de la récupération des factures depuis l'API
       test("fetches bills from an API and fails with 404 message error", async () => {
+        // Remplace l'implémentation de la méthode "list" pour renvoyer une promesse rejetée avec une erreur 404
         mockStore.bills.mockImplementationOnce(() => {
           return {
             list: () => {
@@ -370,13 +399,19 @@ describe("Given I am a user connected as Admin", () => {
             },
           };
         });
+
+        // Simule la navigation vers le tableau de bord
         window.onNavigate(ROUTES_PATH.Dashboard);
+
+        // Attend que le message d'erreur 404 soit rendu à l'écran
         await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 404/);
         expect(message).toBeTruthy();
       });
 
+      // Teste la gestion d'une erreur 500 lors de la récupération des factures depuis l'API
       test("fetches messages from an API and fails with 500 message error", async () => {
+        // Remplace l'implémentation de la méthode "list" pour renvoyer une promesse rejetée avec une erreur 500
         mockStore.bills.mockImplementationOnce(() => {
           return {
             list: () => {
@@ -385,7 +420,10 @@ describe("Given I am a user connected as Admin", () => {
           };
         });
 
+        // Simule la navigation vers le tableau de bord
         window.onNavigate(ROUTES_PATH.Dashboard);
+
+        // Attend que le message d'erreur 500 soit rendu à l'écran
         await new Promise(process.nextTick);
         const message = await screen.getByText(/Erreur 500/);
         expect(message).toBeTruthy();
