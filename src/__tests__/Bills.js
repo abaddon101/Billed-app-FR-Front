@@ -17,6 +17,8 @@ import mockStore from "../__mocks__/store";
 import router from "../app/Router.js";
 
 jest.mock("../app/store", () => mockStore);
+// simule la fonction $modal
+$.fn.modal = jest.fn();
 // Description des tests pour le contexte où l'utilisateur est connecté en tant qu'employé
 describe("Given I am connected as an employee", () => {
   // Description du premier test : Lorsque je suis sur la page des factures
@@ -83,12 +85,10 @@ describe("Given I am connected as an employee", () => {
       const onNavigate = jest.fn((pathname) => {
         document.body.innerHTML = ROUTES({ pathname });
       });
-
       // Configuration de l'objet localStorage pour le test
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
       });
-
       // Ajout d'un utilisateur simulé dans le localStorage
       window.localStorage.setItem(
         "user",
@@ -96,33 +96,69 @@ describe("Given I am connected as an employee", () => {
           type: "Employee",
         })
       );
-
       // Initialisation de Bills avec la fonction mock pour handleClickNewBill
       const bills = new Bills({
         document,
         onNavigate, // Utilisation de l'espion (spy) ici
         localStorage: window.localStorage,
       });
-
       // Injection du HTML simulé dans le corps du document
       document.body.innerHTML = BillsUI({ data: bills });
-
       const handleClickNewBillTest = jest.fn((e) => bills.handleClickNewBill());
-
       // Récupération des éléments DOM
       const buttonNewBill = screen.getByTestId("btn-new-bill");
-
       // Ajout d'un écouteur d'événements pour le clic
       buttonNewBill.addEventListener("click", handleClickNewBillTest);
-
       // Simulation du clic
       userEvent.click(buttonNewBill);
-
       // Vérification que la fonction associée au clic a été appelée
       expect(handleClickNewBillTest).toHaveBeenCalled();
-
       // Vérification que l'espion (spy) onNavigate a été appelé avec les bons arguments
       expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
+    });
+
+    test("Then modal should be displayed after clicking on bill icon", async () => {
+      // Créer une facture fictive pour les tests
+      const fakeBill = {
+        url: "fakeBillUrl",
+      };
+
+      // Injection du HTML simulé dans le corps du document
+      document.body.innerHTML = BillsUI({ data: [fakeBill] });
+
+      // Créer une instance de la classe Bills avec des mocks appropriés
+      const billsInstance = new Bills({
+        document,
+        onNavigate: jest.fn(),
+        store: {
+          bills: () => ({
+            list: () => Promise.resolve([fakeBill]),
+          }),
+        },
+      });
+
+      // Appeler la méthode getBills pour initialiser les éléments de la page
+      await billsInstance.getBills();
+
+      // Récupérer l'icône "eye" et simuler le clic
+      const iconEye = screen.getByTestId("icon-eye");
+
+      // Simuler le clic sur l'icône "eye"
+      userEvent.click(iconEye);
+
+      // Attendre que la modale soit affichée
+      await waitFor(() => {
+        const modalContent = document.querySelector(".modal-content");
+        expect($.fn.modal).toHaveBeenCalled();
+
+        expect(modalContent).toBeInTheDocument();
+
+        expect(modalContent.innerHTML).toContain(`<img width=`);
+        console.log("Modal Content InnerHTML:", modalContent.innerHTML);
+        expect(modalContent.innerHTML).toContain(`<h5`);
+        // expect(modalContent.innerHTML).toContain(`src=${fakeBill.url}`);
+        // console.log("Fake Bill URL:", fakeBill.url);
+      });
     });
   });
 });
