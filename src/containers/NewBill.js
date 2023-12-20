@@ -34,11 +34,11 @@ export default class {
   handleChangeFile = (e) => {
     e.preventDefault();
     
-    console.log("File change event triggered");
+    // console.log("File change event triggered");
     // Récupération du fichier depuis l'élément d'entrée de fichier
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    console.log("File input element:", fileInput);
+    // console.log("File input element:", fileInput);
 
     // Vérification de l'extension du fichier
     const allowedExtensions = ["jpg", "jpeg", "png"];
@@ -52,7 +52,7 @@ export default class {
       return;
     }
 
-    console.log("File extension:", fileExtension);
+    // console.log("File extension:", fileExtension);
 
     // Création d'un objet FormData pour envoyer le fichier et l'e-mail de l'utilisateur au serveur
     const formData = new FormData();
@@ -71,7 +71,7 @@ export default class {
       })
       .then(({ fileUrl, key }) => {
         // Traitement de la réponse et mise à jour des propriétés liées au fichier de facture
-        console.log("File URL:", fileUrl);
+        // console.log("File URL:", fileUrl);
         this.billId = key;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
@@ -82,7 +82,7 @@ export default class {
   // Méthode appelée lorsqu'un formulaire est soumis
   handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form submit event triggered");
+    // console.log("Form submit event triggered");
     // Récupération des valeurs du formulaire pour créer une nouvelle facture
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
@@ -104,7 +104,7 @@ export default class {
       status: "pending",
     };
 
-    console.log("Form values:", bill);
+    // console.log("Form values:", bill);
 
     // Appel de la méthode pour mettre à jour la facture
     this.updateBill(bill);
