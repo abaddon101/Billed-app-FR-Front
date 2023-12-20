@@ -35,6 +35,7 @@ const rows = (data) => {
 
 // Fonction principale exportée sous forme de composant React
 export default ({ data: bills, loading, error }) => {
+  console.log(bills)
   // Fonction pour générer le HTML de la modale
   const modal = () => `
     <div class="modal fade" id="modaleFile" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">

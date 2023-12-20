@@ -5,6 +5,7 @@ export default () => {
     <div class='layout'>
       ${VerticalLayout(120)}
       <div class='content'>
+
         <div class='content-header'>
           <div class='content-title'> Envoyer une note de frais </div>
         </div>
@@ -60,6 +61,7 @@ export default () => {
             </div>
             <div class="row">
               <div class="col-md-6">
+         
                 <div class="col-half">
                   <button type="submit" id='btn-send-bill' class="btn btn-primary">Envoyer</button>
                 </div>

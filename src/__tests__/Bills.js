@@ -22,6 +22,10 @@ describe("Given I am connected as an employee", () => {
   describe("When I am on Bills Page", () => {
     // Premier sous-test : L'icône de la fenêtre de factures dans la mise en page verticale devrait être mise en surbrillance
     test("Then bill icon in vertical layout should be highlighted", async () => {
+      // Avant la configuration du localStorage
+      console.log("Before localStorage configuration:");
+      console.log("Original localStorage:", window.localStorage);
+
       // Configuration d'un localStorage factice
       Object.defineProperty(window, "localStorage", {
         value: localStorageMock,
@@ -35,6 +39,10 @@ describe("Given I am connected as an employee", () => {
         })
       );
 
+      // Après la configuration du localStorage
+      console.log("After localStorage configuration:");
+      console.log("Modified localStorage:", window.localStorage);
+
       // Création d'un élément div avec l'id "root" dans le corps du document
       const root = document.createElement("div");
       root.setAttribute("id", "root");
@@ -47,7 +55,6 @@ describe("Given I am connected as an employee", () => {
       window.onNavigate(ROUTES_PATH.Bills);
 
       // Attente de l'affichage de l'icône de la fenêtre
-
       await waitFor(() => {
         const windowIcon = screen.getByTestId("icon-window");
         expect(windowIcon).toBeInTheDocument();
@@ -168,7 +175,7 @@ describe("Given I am a user connected as Employee", () => {
       root.setAttribute("id", "root");
       document.body.append(root);
 
-      // Initialise le router 
+      // Initialise le router
       router();
 
       // Simule la navigation vers la page des notes de frais
@@ -207,7 +214,7 @@ describe("Given I am a user connected as Employee", () => {
         root.setAttribute("id", "root");
         document.body.appendChild(root);
 
-        // Initialise le router 
+        // Initialise le router
         router();
       });
 

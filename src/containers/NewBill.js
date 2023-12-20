@@ -3,7 +3,7 @@ import { ROUTES_PATH } from "../constants/routes.js";
 import Logout from "./Logout.js";
 
 // Classe NewBill représentant la création d'une nouvelle facture
-export default class NewBill {
+export default class {
   // Constructeur de la classe prenant en paramètre un objet contenant document, onNavigate, store et localStorage
   constructor({ document, onNavigate, store, localStorage }) {
     // Initialisation des propriétés de la classe avec les valeurs fournies en paramètre
@@ -33,10 +33,13 @@ export default class NewBill {
   // Méthode appelée lorsqu'un fichier est sélectionné
   handleChangeFile = (e) => {
     e.preventDefault();
+    
+    console.log("File change event triggered");
     // Récupération du fichier depuis l'élément d'entrée de fichier
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    // debugger;
+    console.log("File input element:", fileInput);
+
     // Vérification de l'extension du fichier
     const allowedExtensions = ["jpg", "jpeg", "png"];
     const fileName = fileInput.value.split(/(\\|\/)/g).pop();
@@ -46,11 +49,10 @@ export default class NewBill {
       console.error(
         "Extension de fichier non autorisée. Veuillez sélectionner un fichier jpg, jpeg ou png."
       );
-      console.log(
-        "Extension de fichier non autorisée. Veuillez sélectionner un fichier jpg, jpeg ou png."
-      );
       return;
     }
+
+    console.log("File extension:", fileExtension);
 
     // Création d'un objet FormData pour envoyer le fichier et l'e-mail de l'utilisateur au serveur
     const formData = new FormData();
@@ -69,7 +71,7 @@ export default class NewBill {
       })
       .then(({ fileUrl, key }) => {
         // Traitement de la réponse et mise à jour des propriétés liées au fichier de facture
-        console.log(fileUrl);
+        console.log("File URL:", fileUrl);
         this.billId = key;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
@@ -80,6 +82,7 @@ export default class NewBill {
   // Méthode appelée lorsqu'un formulaire est soumis
   handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Form submit event triggered");
     // Récupération des valeurs du formulaire pour créer une nouvelle facture
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
@@ -101,6 +104,8 @@ export default class NewBill {
       status: "pending",
     };
 
+    console.log("Form values:", bill);
+
     // Appel de la méthode pour mettre à jour la facture
     this.updateBill(bill);
 
@@ -109,6 +114,7 @@ export default class NewBill {
   };
 
   // Méthode pour mettre à jour la facture
+  // not need to cover this function by tests
   updateBill = (bill) => {
     if (this.store) {
       // Appel de la méthode d'API pour mettre à jour la facture

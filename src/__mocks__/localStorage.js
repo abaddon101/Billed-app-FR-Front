@@ -1,17 +1,25 @@
-export const localStorageMock = (function() {
+export const localStorageMock = (() => {
   let store = {};
+
+  // Initialiser getItem en tant que fonction jest mockable
+  const getItem = jest.fn((key) => JSON.stringify(store[key]));
+
+  const setItem = (key, value) => {
+    store[key] = value.toString();
+  };
+
+  const clear = () => {
+    store = {};
+  };
+
+  const removeItem = (key) => {
+    delete store[key];
+  };
+
   return {
-    getItem: function(key) {
-      return JSON.stringify(store[key])
-    },
-    setItem: function(key, value) {
-      store[key] = value.toString()
-    },
-    clear: function() {
-      store = {}
-    },
-    removeItem: function(key) {
-      delete store[key]
-    }
-  }
-})()
+    getItem,
+    setItem,
+    clear,
+    removeItem,
+  };
+})();
