@@ -5,7 +5,6 @@ import {
   fireEvent,
   getByLabelText,
 } from "@testing-library/dom";
-
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import NewBillUI from "../views/NewBillUI.js";
@@ -17,7 +16,6 @@ import router from "../app/Router.js";
 
 // Mock du Store
 jest.mock("../app/Store", () => require("../__mocks__/store.js"));
-
 // Fonction utilitaire pour créer une liste de fichiers simulée (simule un objet FileList)
 function createFileList(files) {
   // Création d'un objet vide qui servira à simuler un objet FileList
@@ -60,15 +58,15 @@ describe("Given I am connected as an employee", () => {
       expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
     });
     // Test : Vérification de la mise en surbrillance de l'icône de messagerie dans la disposition verticale
-    // test("Then mail icon in vertical layout should be highlighted", async () => {
-    //   // Navigation vers la page NewBill
-    //   window.onNavigate(ROUTES_PATH.NewBill);
-    //   // Attente de l'affichage de l'icône mail
-    //   await waitFor(() => screen.getByTestId("icon-mail"));
-    //   const mailIcon = screen.getByTestId("icon-mail");
-    //   // Assertion : Vérification de la classe "active-icon" de l'icône
-    //   expect(mailIcon.className).toBe("active-icon");
-    // });
+    test("Then mail icon in vertical layout should be highlighted", async () => {
+      // Navigation vers la page NewBill
+      window.onNavigate(ROUTES_PATH.NewBill);
+      // Attente de l'affichage de l'icône mail
+      await waitFor(() => screen.getByTestId("icon-mail"));
+      const mailIcon = screen.getByTestId("icon-mail");
+      // Assertion : Vérification de la classe "active-icon" de l'icône
+      expect(mailIcon.className).toBe("active-icon");
+    });
   });
 });
 
@@ -260,192 +258,3 @@ describe("Given I am connected as an employee on the NewBill page, and I submit 
     });
   });
 });
-
-// // Test d'intégration POST pour des nouvelles notes de frais
-
-// describe("Given I am connected as an employee on the NewBill page", () => {
-//   let newBill;
-//   let onNavigateMock;
-
-//   beforeAll(() => {
-//     // Code qui s'exécutera une seule fois avant l'exécution des tests du describe
-//     // Prépare l'état de l'utilisateur en tant qu'employé connecté
-//     localStorage.setItem(
-//       "user",
-//       JSON.stringify({ type: "Employee", email: "e@e" })
-//     );
-//     // Crée un élément de div en tant que point d'ancrage pour l'application
-//     const root = document.createElement("div");
-//     root.setAttribute("id", "root");
-//     document.body.append(root);
-//     // Initialise le router
-//     router();
-//     // Simule la navigation vers la page des notes de frais
-//     window.onNavigate(ROUTES_PATH.NewBill);
-//   });
-
-//   afterAll(() => {
-//     // Code qui s'exécutera une seule fois après l'exécution des tests du describe
-//     // Nettoyez l'état après les tests si nécessaire
-//     localStorage.removeItem("user");
-//     // Nettoyez l'élément de div créé si nécessaire
-//     document.body.removeChild(document.getElementById("root"));
-//   });
-
-//   describe("When I navigate to newBills page", () => {
-//     test("check if the form is displayed", async () => {
-//       // Attend que le titre "Envoyer une note de frais" soit rendu à l'écran
-//       await waitFor(() => screen.getByText("Envoyer une note de frais"));
-//       // Vérifie la présence d'éléments spécifiques sur la page des notes de frais
-//       const form = await screen.getByTestId("form-new-bill");
-//       expect(form).toBeTruthy();
-//     });
-//   });
-
-//   // // Test d'intégration POST pour la création d'une nouvelle note de frais
-//   // describe("When I submit the form with valid data", () => {
-//   //   test("Then a new bill should be created", async () => {
-//   //     // Navigation vers la page NewBill
-//   //     window.onNavigate(ROUTES_PATH.NewBill);
-
-//   //     // Initialisation de l'instance NewBill
-//   //     newBill = new NewBill({
-//   //       document,
-//   //       onNavigate,
-//   //       store: mockStore,
-//   //       localStorage: window.localStorage,
-//   //     });
-
-//   //     // Simulez la saisie de données dans le formulaire
-//   //     userEvent.selectOptions(
-//   //       screen.getByLabelText("expense-type"),
-//   //       "Transports"
-//   //     );
-//   //     userEvent.type(
-//   //       screen.getByLabelText("expense-name"),
-//   //       "Nom de la dépense"
-//   //     );
-//   //     userEvent.type(screen.getByLabelText("datepicker"), "2023-12-20");
-//   //     userEvent.type(screen.getByLabelText("amount"), "100");
-//   //     userEvent.type(screen.getByLabelText("vat"), "20");
-//   //     userEvent.type(screen.getByLabelText("pct"), "10");
-//   //     userEvent.type(screen.getByLabelText("commentary"), "Commentaire");
-
-//   //     // Création d'un fichier avec le bon format
-//   //     const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-//   //     const inputFile = screen.getByTestId("file");
-//   //     const fileList = createFileList([file]);
-//   //     Object.defineProperty(inputFile, "files", {
-//   //       get: () => fileList,
-//   //     });
-//   //     fireEvent.change(inputFile);
-
-//   //     // Soumission du formulaire
-//   //     const form = screen.getByTestId("form-new-bill");
-//   //     const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-//   //     form.addEventListener("submit", handleSubmit);
-//   //     fireEvent.submit(form);
-
-//   //     // Attente de la création de la nouvelle note de frais
-//   //     await waitFor(() => {
-//   //       expect(handleSubmit).toHaveBeenCalled();
-//   //       // Ajoutez ici des assertions pour vérifier que la nouvelle note de frais a été créée correctement
-//   //     });
-//   //   });
-//   //   // Ajoutez d'autres tests ou describe ici si nécessaire
-//   // });
-// });
-
-// // Utilitaire pour créer une liste de fichiers
-// const createFileList = (files) => {
-//   const fileList = {
-//     length: files.length,
-//     item: (index) => files[index],
-//   };
-//   return fileList;
-// };
-
-// Testez la soumission du formulaire avec des données valides
-// describe("When submitting the form with valid data", () => {
-//   // Déclarez les mocks nécessaires en dehors du test
-//   let onNavigateMock;
-//   let mockStore;
-//   let newBill;
-
-//   beforeEach(() => {
-//     // Initialisez les mocks avant chaque test
-//     onNavigateMock = jest.fn();
-//     mockStore.bills.mockImplementationOnce(() => {
-//       return {
-//         create: jest.fn(),
-//       };
-//     });
-
-//     // Initialisez l'instance NewBill avant chaque test
-//     newBill = new NewBill({
-//       document,
-//       onNavigate: onNavigateMock,
-//       store: mockStore,
-//       localStorage: window.localStorage,
-//     });
-//   });
-
-//   test("Then it should successfully submit the form", async () => {
-//     // Simulez le changement de fichier
-//     const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-//     const inputFile = screen.getByTestId("file");
-//     const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
-//     inputFile.addEventListener("change", handleChangeFile);
-//     const fileList = createFileList([file]);
-//     Object.defineProperty(inputFile, "files", {
-//       get: () => fileList,
-//     });
-//     fireEvent.change(inputFile);
-
-//     // Simulez le remplissage des champs requis
-//     const expenseTypeSelect = screen.getByTestId("expense-type");
-//     fireEvent.change(expenseTypeSelect, { target: { value: "Transports" } });
-
-//     const expenseNameInput = screen.getByTestId("expense-name");
-//     fireEvent.change(expenseNameInput, {
-//       target: { value: "Vol Paris Londres" },
-//     });
-
-//     const dateInput = screen.getByTestId("datepicker");
-//     fireEvent.change(dateInput, { target: { value: "2023-01-01" } });
-
-//     const amountInput = screen.getByTestId("amount");
-//     fireEvent.change(amountInput, { target: { value: "348" } });
-
-//     const vatInput = screen.getByTestId("vat");
-//     fireEvent.change(vatInput, { target: { value: "70" } });
-
-//     const pctInput = screen.getByTestId("pct");
-//     fireEvent.change(pctInput, { target: { value: "20" } });
-
-//     const commentaryInput = screen.getByTestId("commentary");
-//     fireEvent.change(commentaryInput, {
-//       target: { value: "Commentaire test" },
-//     });
-
-//     // Simulez la soumission du formulaire
-//     const form = screen.getByTestId("form-new-bill");
-//     const handleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-//     form.addEventListener("submit", handleSubmit);
-//     fireEvent.submit(form);
-
-//     // Assurez-vous que la fonction de gestion de la soumission du formulaire a été appelée
-//     expect(handleSubmit).toHaveBeenCalled();
-
-//     // Ajoutez des assertions supplémentaires si nécessaire
-//     // ...
-
-//     // Attendez-vous à ce que l'API soit appelée avec les bonnes données
-//     // Assurez-vous que l'appel à l'API est correctement géré par le code sous test
-//     // ...
-
-//     // Attendez-vous à ce que la navigation ait eu lieu (si elle doit avoir lieu)
-//     // Utilisez onNavigateMock.mock.calls ou onNavigateMock.mock.results si nécessaire
-//     // ...
-//   });
-// });
