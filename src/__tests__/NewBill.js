@@ -72,7 +72,6 @@ describe("Given I am connected as an employee", () => {
 describe("Given I am connected as an employee and I am on the NewBill page", () => {
   let newBill; // Déclaration d'une variable pour stocker l'instance de NewBill
   let onNavigateMock; // Déclaration d'une variable pour stocker une fonction mock de navigation
-
   beforeEach(() => {
     // Avant chaque test, configuration de l'environnement de test
     // Effacement du contenu du corps du document HTML et ajout du HTML généré par la fonction NewBillUI()
@@ -93,7 +92,6 @@ describe("Given I am connected as an employee and I am on the NewBill page", () 
       localStorage: window.localStorage,
     });
   });
-
   // Tests pour la soumission du formulaire avec des champs vides
   describe("When I submit the form with empty fields", () => {
     test("Then I should stay on the NewBill page", async () => {
@@ -119,42 +117,6 @@ describe("Given I am connected as an employee and I am on the NewBill page", () 
       await waitFor(() => expect(onNavigateMock).toHaveBeenCalledTimes(0));
     });
   });
-
-  // Tests pour la soumission du formulaire avec des données valides
-  describe("When I submit the form with valid data", () => {
-    test("Then it should submit the form and navigate on Bills page", async () => {
-      // Remplir les champs du formulaire avec des données valides
-      const expenseNameInput = screen.getByTestId("expense-name");
-      const datepickerInput = screen.getByTestId("datepicker");
-      const amountInput = screen.getByTestId("amount");
-      const vatInput = screen.getByTestId("vat");
-      const pctInput = screen.getByTestId("pct");
-      const fileInput = screen.getByTestId("file");
-
-      userEvent.type(expenseNameInput, "Example Expense");
-      userEvent.type(datepickerInput, "2023-12-20");
-      userEvent.type(amountInput, "100");
-      userEvent.type(vatInput, "20");
-      userEvent.type(pctInput, "10");
-
-      // Simulation du téléchargement d'un fichier
-      const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-      const fileList = createFileList([file]);
-      Object.defineProperty(fileInput, "files", {
-        get: () => fileList,
-      });
-      fireEvent.change(fileInput);
-
-      // Soumission du formulaire
-      const form = screen.getByTestId("form-new-bill");
-      const testHandleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-      form.addEventListener("submit", testHandleSubmit);
-      fireEvent.submit(form);
-      expect(testHandleSubmit).toHaveBeenCalledTimes(1);
-      expect(screen.getByText("Mes notes de frais")).toBeTruthy();
-    });
-  });
-
   // Tests pour le téléchargement d'un fichier avec un format incorrect
   describe("When I upload a file with the wrong format", () => {
     test("Then it should return an error message", async () => {
@@ -179,35 +141,10 @@ describe("Given I am connected as an employee and I am on the NewBill page", () 
       expect(inputFile.files[0].name).toBe("hello.txt");
     });
   });
-
-  // Tests pour le téléchargement d'un fichier avec le bon format
-  describe("When I upload a file with the correct format", () => {
-    test("Then I should not have the error message about the file format", async () => {
-      // Simulation du téléchargement d'un fichier
-      const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-      const inputFile = screen.getByTestId("file");
-
-      // Gestion du changement de fichier
-      const handleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
-      inputFile.addEventListener("change", handleChangeFile);
-
-      // Simulation du changement de fichier
-      const fileList = createFileList([file]);
-      Object.defineProperty(inputFile, "files", {
-        get: () => fileList,
-      });
-
-      fireEvent.change(inputFile);
-
-      // Assertions sur le changement de fichier
-      expect(handleChangeFile).toHaveBeenCalled();
-      expect(inputFile.files[0].name).toBe("image.jpg");
-    });
-  });
 });
 
-// Tests pour la soumission du formulaire avec des données valides
-describe("Given I am connected as an employee on the NewBill page, and I submit the form with valid data", () => {
+// // Tests pour la soumission du formulaire avec des données valides
+describe("Given I submit the form with valid data", () => {
   beforeEach(() => {
     // Configuration de l'environnement de test
     document.body.innerHTML = "";
@@ -290,6 +227,16 @@ describe("Given I am connected as an employee 2", () => {
   let newBill; // Déclaration d'une variable pour stocker l'instance de NewBill
   beforeEach(() => {
     document.body.innerHTML = NewBillUI();
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "Employee",
+        email: "a@a",
+      })
+    );
     const onNavigate = (pathname) => {
       document.body.innerHTML = ROUTES({ pathname });
     };
@@ -299,6 +246,9 @@ describe("Given I am connected as an employee 2", () => {
       store: mockStore,
       localStorage: window.localStorage,
     });
+    // Espionner les méthodes
+    jest.spyOn(newBill, "updateBill");
+    jest.spyOn(window, "onNavigate");
   });
   describe("When I am on the Newbill Page", () => {
     describe("When I filled in correct format all the required fields", () => {
@@ -310,6 +260,7 @@ describe("Given I am connected as an employee 2", () => {
         const amountInput = screen.getByTestId("amount");
         const vatInput = screen.getByTestId("vat");
         const pctInput = screen.getByTestId("pct");
+
         const fileInput = screen.getByTestId("file");
 
         fireEvent.change(expenseTypeInput, { target: { value: "Transports" } });
@@ -335,7 +286,7 @@ describe("Given I am connected as an employee 2", () => {
 
         // Simulez le changement de fichier
         fireEvent.change(fileInput);
-
+        await waitFor(() => userEvent.upload(fileInput, file));
         // Soumission du formulaire
         const form = screen.getByTestId("form-new-bill");
         const testHandleSubmit = jest.fn((e) => newBill.handleSubmit(e));
@@ -349,49 +300,5 @@ describe("Given I am connected as an employee 2", () => {
         expect(screen.getByText("Mes notes de frais")).toBeTruthy();
       });
     });
-    // describe("When the form is submitted", () => {
-    // test("Then, it should send to the server when the form is submitted", async () => {
-    //   // Simuler la saisie des valeurs du formulaire
-    //   const expenseTypeInput = screen.getByTestId("expense-type");
-    //   const expenseNameInput = screen.getByTestId("expense-name");
-    //   const datepickerInput = screen.getByTestId("datepicker");
-    //   const amountInput = screen.getByTestId("amount");
-    //   const vatInput = screen.getByTestId("vat");
-    //   const pctInput = screen.getByTestId("pct");
-    //   const fileInput = screen.getByTestId("file");
-    //   // Ajoutez ici d'autres sélections d'éléments pour les champs du formulaire
-
-    //   fireEvent.change(expenseTypeInput, { target: { value: "SomeType" } });
-    //   fireEvent.change(expenseNameInput, { target: { value: "SomeName" } });
-    //   // Ajoutez ici d'autres changements pour les autres champs du formulaire
-
-    //   // Simuler la sélection d'un fichier
-    //   const fileInput = screen.getByTestId("file");
-    //   const testFile = new File(["file content"], "file.txt", {
-    //     type: "text/plain",
-    //   });
-    //   fireEvent.change(fileInput, { target: { files: [testFile] } });
-
-    //   // Simuler la soumission du formulaire
-    //   const form = screen.getByTestId("form-new-bill");
-    //   fireEvent.submit(form);
-
-    //   // Attendre que la requête au serveur soit terminée (par exemple, en utilisant waitFor)
-    //   // Ajoutez du code ici pour attendre que la requête soit terminée
-
-    //   // Vérifier que la méthode updateBill a été appelée avec les bonnes données
-    //   expect(newBill.updateBill).toHaveBeenCalledWith({
-    //     email: "user@example.com", // Remplacez par l'e-mail attendu
-    //     type: "SomeType",
-    //     name: "SomeName",
-    //     // Ajoutez ici d'autres champs attendus
-    //     fileUrl: expect.any(String),
-    //     fileName: "file.txt",
-    //     status: "pending",
-    //   });
-
-    //   // Vérifier que la navigation a eu lieu
-    //   expect(window.onNavigate).toHaveBeenCalledWith("/bills");
-    // });
   });
 });

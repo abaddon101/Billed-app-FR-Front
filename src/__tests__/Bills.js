@@ -23,8 +23,8 @@ describe("Given I am connected as an employee", () => {
     // Premier sous-test : L'icône de la fenêtre de factures dans la mise en page verticale devrait être mise en surbrillance
     test("Then bill icon in vertical layout should be highlighted", async () => {
       // Avant la configuration du localStorage
-      console.log("Before localStorage configuration:");
-      console.log("Original localStorage:", window.localStorage);
+      // console.log("Before localStorage configuration:");
+      // console.log("Original localStorage:", window.localStorage);
 
       // Configuration d'un localStorage factice
       Object.defineProperty(window, "localStorage", {
@@ -40,8 +40,8 @@ describe("Given I am connected as an employee", () => {
       );
 
       // Après la configuration du localStorage
-      console.log("After localStorage configuration:");
-      console.log("Modified localStorage:", window.localStorage);
+      // console.log("After localStorage configuration:");
+      // console.log("Modified localStorage:", window.localStorage);
 
       // Création d'un élément div avec l'id "root" dans le corps du document
       const root = document.createElement("div");
@@ -153,7 +153,7 @@ describe("Given I am connected as an employee", () => {
         expect($.fn.modal).toHaveBeenCalled();
         expect(modalContent).toBeInTheDocument();
         expect(modalContent.innerHTML).toContain(`<img width=`);
-        console.log("Modal Content InnerHTML:", modalContent.innerHTML);
+        // console.log("Modal Content InnerHTML:", modalContent.innerHTML);
         expect(modalContent.innerHTML).toContain(`<h5`);
       });
     });

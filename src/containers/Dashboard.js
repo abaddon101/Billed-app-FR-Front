@@ -175,16 +175,16 @@ export default class {
       ); // Remplace le contenu HTML d'un élément avec un ID spécifique par des cartes générées à partir de certaines données filtrées
       this.counter++;
       // Ajouter un console log pour déboguer les valeurs
-      console.log("Counter:", this.counter); // Affiche la valeur actuelle de counter dans la console
-      console.log("Index:", this.index); // Affiche la valeur actuelle de l'index dans la console
+      // console.log("Counter:", this.counter); // Affiche la valeur actuelle de counter dans la console
+      // console.log("Index:", this.index); // Affiche la valeur actuelle de l'index dans la console
     } else {
       $(`#arrow-icon${this.index}`).css({ transform: "rotate(90deg)" }); // Modifie la rotation d'un élément avec un ID spécifique
       $(`#status-bills-container${this.index}`).html(""); // Efface le contenu HTML d'un élément avec un ID spécifique
       this.counter++;
     }
 
-    console.log("Counter:", this.counter); // Affiche la valeur actuelle de counter dans la console
-    console.log("Index:", this.index); // Affiche la valeur actuelle de l'index dans la console
+    // console.log("Counter:", this.counter); // Affiche la valeur actuelle de counter dans la console
+    // console.log("Index:", this.index); // Affiche la valeur actuelle de l'index dans la console
 
     // Détacher les gestionnaires d'événements existants sur les éléments avec la classe 'open-bill'
     $(`#status-bills-container${this.index}`).off("click", ".open-bill");

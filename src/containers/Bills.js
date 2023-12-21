@@ -77,7 +77,7 @@ export default class {
               };
             } catch (e) {
               // Gestion de l'erreur en cas d'échec du formatage de la date
-              console.log(e, "for", doc);
+              // console.log(e, "for", doc);
               // Retour de la facture avec la date non formatée dans ce cas
               return {
                 ...doc,
@@ -87,7 +87,7 @@ export default class {
             }
           });
           // Affichage de la longueur de la liste des factures dans la console
-          console.log("length", bills.length);
+          // console.log("length", bills.length);
           // Retour de la liste des factures formatées
           return bills;
         });

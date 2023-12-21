@@ -18,25 +18,25 @@ export default () => {
   // console.log("router control:");
   // Récupère l'élément avec l'ID "root" dans le DOM
   const rootDiv = document.getElementById("root");
-  console.log("rootDiv control:", rootDiv);
+  // console.log("rootDiv control:", rootDiv);
   // Initialise le contenu de l'élément "root" avec le rendu des routes en fonction du chemin actuel
   rootDiv.innerHTML = ROUTES({ pathname: window.location.pathname });
   // console.log("rootDiv control:", rootDiv.innerHTML);
-  console.log("pathname: window.location.pathname:", window.location.pathname);
+  // console.log("pathname: window.location.pathname:", window.location.pathname);
 
   // Définit une fonction onNavigate pour la navigation entre les pages
   window.onNavigate = (pathname) => {
-    console.log("Navigating to:", pathname); // <-- Ajout d'un log
+    // console.log("Navigating to:", pathname); // <-- Ajout d'un log
     // Met à jour l'historique de navigation
     window.history.pushState({}, pathname, window.location.origin + pathname);
 
     // Gère les différentes pages en fonction du chemin (pathname)
     if (pathname === ROUTES_PATH["Login"]) {
-      console.log("Rendering Login page");
+      // console.log("Rendering Login page");
       // Affiche la page de connexion
       rootDiv.innerHTML = ROUTES({ pathname });
       document.body.style.backgroundColor = "#0E5AE5";
-      console.log("About to instantiate Login...");
+      // console.log("About to instantiate Login...");
       new Login({
         document,
         localStorage,
@@ -45,7 +45,7 @@ export default () => {
         store,
       });
     } else if (pathname === ROUTES_PATH["Bills"]) {
-      console.log("Rendering Bills page");
+      // console.log("Rendering Bills page");
       // Affiche la page des factures avec indication de chargement
       rootDiv.innerHTML = ROUTES({ pathname, loading: true });
       const divIcon1 = document.getElementById("layout-icon1");
@@ -57,7 +57,7 @@ export default () => {
         .getBills()
         .then((data) => {
           // Affiche les données des factures une fois qu'elles sont chargées
-          console.log("Bills data loaded:", data);
+          // console.log("Bills data loaded:", data);
           rootDiv.innerHTML = BillsUI({ data });
           const divIcon1 = document.getElementById("layout-icon1");
           const divIcon2 = document.getElementById("layout-icon2");
@@ -72,7 +72,7 @@ export default () => {
         });
     } else if (pathname === ROUTES_PATH["NewBill"]) {
       // Affiche la page de création d'une nouvelle facture
-      console.log("Rendering NewBill page");
+      // console.log("Rendering NewBill page");
       rootDiv.innerHTML = ROUTES({ pathname, loading: true });
       new NewBill({ document, onNavigate, store, localStorage });
       const divIcon1 = document.getElementById("layout-icon1");
@@ -81,7 +81,7 @@ export default () => {
       divIcon2.classList.add("active-icon");
     } else if (pathname === ROUTES_PATH["Dashboard"]) {
       // Affiche le tableau de bord avec indication de chargement
-      console.log("Rendering Dashboard page");
+      // console.log("Rendering Dashboard page");
       rootDiv.innerHTML = ROUTES({ pathname, loading: true });
       const bills = new Dashboard({
         document,
@@ -94,7 +94,7 @@ export default () => {
         .getBillsAllUsers()
         .then((bills) => {
           // Affiche les données du tableau de bord une fois qu'elles sont chargées
-          console.log("Dashboard data loaded:", bills);
+          // console.log("Dashboard data loaded:", bills);
           rootDiv.innerHTML = DashboardUI({ data: { bills } });
           new Dashboard({ document, onNavigate, store, bills, localStorage });
         })

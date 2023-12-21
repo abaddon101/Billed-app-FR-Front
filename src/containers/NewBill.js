@@ -1,4 +1,3 @@
-// Importation de la constante ROUTES_PATH depuis le module routes.js et de la classe Logout depuis Logout.js
 import { ROUTES_PATH } from "../constants/routes.js";
 import Logout from "./Logout.js";
 
@@ -10,22 +9,18 @@ export default class {
     this.document = document;
     this.onNavigate = onNavigate;
     this.store = store;
-
     // Récupération de l'élément de formulaire "form-new-bill" et ajout d'un gestionnaire d'événement sur la soumission du formulaire
     const formNewBill = this.document.querySelector(
       `form[data-testid="form-new-bill"]`
     );
     formNewBill.addEventListener("submit", this.handleSubmit);
-
     // Récupération de l'élément d'entrée de fichier "file" et ajout d'un gestionnaire d'événement sur le changement de fichier
     const file = this.document.querySelector(`input[data-testid="file"]`);
     file.addEventListener("change", this.handleChangeFile);
-
     // Initialisation des propriétés liées au fichier de facture
     this.fileUrl = null;
     this.fileName = null;
     this.billId = null;
-
     // Instanciation de la classe Logout pour gérer la déconnexion
     new Logout({ document, localStorage, onNavigate });
   }
@@ -33,16 +28,11 @@ export default class {
   // Méthode appelée lorsqu'un fichier est sélectionné
   handleChangeFile = (e) => {
     e.preventDefault();
-    
-    // console.log("File change event triggered");
-    // Récupération du fichier depuis l'élément d'entrée de fichier
     const fileInput = this.document.querySelector(`input[data-testid="file"]`);
     const file = fileInput.files[0];
-    // console.log("File input element:", fileInput);
-
     // Vérification de l'extension du fichier
     const allowedExtensions = ["jpg", "jpeg", "png"];
-    const fileName = fileInput.value.split(/(\\|\/)/g).pop();
+    const fileName = file.name;
     const fileExtension = fileName.split(".").pop().toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {
@@ -51,8 +41,6 @@ export default class {
       );
       return;
     }
-
-    // console.log("File extension:", fileExtension);
 
     // Création d'un objet FormData pour envoyer le fichier et l'e-mail de l'utilisateur au serveur
     const formData = new FormData();
@@ -71,18 +59,15 @@ export default class {
       })
       .then(({ fileUrl, key }) => {
         // Traitement de la réponse et mise à jour des propriétés liées au fichier de facture
-        // console.log("File URL:", fileUrl);
         this.billId = key;
         this.fileUrl = fileUrl;
         this.fileName = fileName;
       })
       .catch((error) => console.error(error));
   };
-
   // Méthode appelée lorsqu'un formulaire est soumis
   handleSubmit = (e) => {
     e.preventDefault();
-    // console.log("Form submit event triggered");
     // Récupération des valeurs du formulaire pour créer une nouvelle facture
     const email = JSON.parse(localStorage.getItem("user")).email;
     const bill = {
@@ -103,8 +88,6 @@ export default class {
       fileName: this.fileName,
       status: "pending",
     };
-
-    // console.log("Form values:", bill);
 
     // Appel de la méthode pour mettre à jour la facture
     this.updateBill(bill);
