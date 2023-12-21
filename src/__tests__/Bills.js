@@ -83,7 +83,7 @@ describe("Given I am connected as an employee", () => {
       // Vérification que les dates dans l'interface utilisateur sont triées correctement
       expect(dates).toEqual(datesSorted);
     });
-
+    // Troisième sous-test : le bouton btn-new-bill devrait permettre de naviguer ver la page NewBill
     test("Then button btn-new-bill should allow to navigate to NewBill", async () => {
       // Création d'un espion (spy) pour la fonction onNavigate
       const onNavigate = jest.fn((pathname) => {
@@ -120,7 +120,7 @@ describe("Given I am connected as an employee", () => {
       // Vérification que l'espion (spy) onNavigate a été appelé avec les bons arguments
       expect(onNavigate).toHaveBeenCalledWith(ROUTES_PATH["NewBill"]);
     });
-
+    // Quatrième sou-test : la modale devrait s'afficher si on click sur l'icone oeil
     test("Then modal should be displayed after clicking on bill icon", async () => {
       // Créer une facture fictive pour les tests
       const fakeBill = {
@@ -159,6 +159,75 @@ describe("Given I am connected as an employee", () => {
     });
   });
 });
+// Suite de tests pour gérer les erreurs de l'API
+describe("When an error occurs on API", () => {
+  beforeEach(() => {
+    // Espionne la méthode "bills" de l'objet mockStore
+    jest.spyOn(mockStore, "bills");
+
+    // Remplace l'objet localStorage par un objet de mock
+    Object.defineProperty(window, "localStorage", {
+      value: localStorageMock,
+    });
+
+    // Initialise l'utilisateur en tant qu'employé connecté
+    window.localStorage.setItem(
+      "user",
+      JSON.stringify({
+        type: "Employee",
+        email: "e@e",
+      })
+    );
+
+    // Crée un élément de div en tant que point d'ancrage pour l'application
+    const root = document.createElement("div");
+    root.setAttribute("id", "root");
+    document.body.appendChild(root);
+
+    // Initialise le router
+    router();
+  });
+
+  // Teste la gestion d'une erreur 404 lors de la récupération des notes de frais depuis l'API
+  test("fetches bills from an API and fails with 404 message error", async () => {
+    // Remplace l'implémentation de la méthode "list" pour renvoyer une promesse rejetée avec une erreur 404
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        list: () => {
+          return Promise.reject(new Error("Erreur 404"));
+        },
+      };
+    });
+
+    // Simule la navigation vers la page des notes de frais
+    window.onNavigate(ROUTES_PATH.Bills);
+
+    // Attend que le message d'erreur 404 soit rendu à l'écran
+    await new Promise(process.nextTick);
+    const message = await screen.getByText(/Erreur 404/);
+    expect(message).toBeTruthy();
+  });
+
+  // Teste la gestion d'une erreur 500 lors de la récupération des notes de frais depuis l'API
+  test("fetches messages from an API and fails with 500 message error", async () => {
+    // Remplace l'implémentation de la méthode "list" pour renvoyer une promesse rejetée avec une erreur 500
+    mockStore.bills.mockImplementationOnce(() => {
+      return {
+        list: () => {
+          return Promise.reject(new Error("Erreur 500"));
+        },
+      };
+    });
+
+    // Simule la navigation vers la page des notes de frais
+    window.onNavigate(ROUTES_PATH.Bills);
+
+    // Attend que le message d'erreur 500 soit rendu à l'écran
+    await new Promise(process.nextTick);
+    const message = await screen.getByText(/Erreur 500/);
+    expect(message).toBeTruthy();
+  });
+});
 
 // Test d'intégration GET pour les notes de frais
 describe("Given I am a user connected as Employee", () => {
@@ -187,76 +256,6 @@ describe("Given I am a user connected as Employee", () => {
       // Vérifie la présence d'éléments spécifiques sur la page des notes de frais
       const table = await screen.getByTestId("tbody");
       expect(table).toBeTruthy();
-    });
-
-    // Suite de tests pour gérer les erreurs de l'API
-    describe("When an error occurs on API", () => {
-      beforeEach(() => {
-        // Espionne la méthode "bills" de l'objet mockStore
-        jest.spyOn(mockStore, "bills");
-
-        // Remplace l'objet localStorage par un objet de mock
-        Object.defineProperty(window, "localStorage", {
-          value: localStorageMock,
-        });
-
-        // Initialise l'utilisateur en tant qu'employé connecté
-        window.localStorage.setItem(
-          "user",
-          JSON.stringify({
-            type: "Employee",
-            email: "e@e",
-          })
-        );
-
-        // Crée un élément de div en tant que point d'ancrage pour l'application
-        const root = document.createElement("div");
-        root.setAttribute("id", "root");
-        document.body.appendChild(root);
-
-        // Initialise le router
-        router();
-      });
-
-      // Teste la gestion d'une erreur 404 lors de la récupération des notes de frais depuis l'API
-      test("fetches bills from an API and fails with 404 message error", async () => {
-        // Remplace l'implémentation de la méthode "list" pour renvoyer une promesse rejetée avec une erreur 404
-        mockStore.bills.mockImplementationOnce(() => {
-          return {
-            list: () => {
-              return Promise.reject(new Error("Erreur 404"));
-            },
-          };
-        });
-
-        // Simule la navigation vers la page des notes de frais
-        window.onNavigate(ROUTES_PATH.Bills);
-
-        // Attend que le message d'erreur 404 soit rendu à l'écran
-        await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur 404/);
-        expect(message).toBeTruthy();
-      });
-
-      // Teste la gestion d'une erreur 500 lors de la récupération des notes de frais depuis l'API
-      test("fetches messages from an API and fails with 500 message error", async () => {
-        // Remplace l'implémentation de la méthode "list" pour renvoyer une promesse rejetée avec une erreur 500
-        mockStore.bills.mockImplementationOnce(() => {
-          return {
-            list: () => {
-              return Promise.reject(new Error("Erreur 500"));
-            },
-          };
-        });
-
-        // Simule la navigation vers la page des notes de frais
-        window.onNavigate(ROUTES_PATH.Bills);
-
-        // Attend que le message d'erreur 500 soit rendu à l'écran
-        await new Promise(process.nextTick);
-        const message = await screen.getByText(/Erreur 500/);
-        expect(message).toBeTruthy();
-      });
     });
   });
 });
