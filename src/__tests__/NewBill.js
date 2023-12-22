@@ -47,29 +47,28 @@ describe("Given I am connected as an employee", () => {
   document.body.append(root);
   // Activation du routeur de l'application
   router();
-  // Description des tests spécifiques à la page NewBill
-  describe("When I am on the NewBill page", () => {
-    // Test : Vérification de l'affichage du titre de la page
-    test("Then title text content should be displayed", async () => {
-      // Navigation vers la page NewBill
-      window.onNavigate(ROUTES_PATH.NewBill);
-      // Assertion : Vérification de l'existence du texte "Envoyer une note de frais"
-      expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
-    });
-    // Test : Vérification de la mise en surbrillance de l'icône de messagerie dans la disposition verticale
-    test("Then mail icon in vertical layout should be highlighted", async () => {
-      // Navigation vers la page NewBill
-      window.onNavigate(ROUTES_PATH.NewBill);
-      // Attente de l'affichage de l'icône mail
-      await waitFor(() => screen.getByTestId("icon-mail"));
-      const mailIcon = screen.getByTestId("icon-mail");
-      // Assertion : Vérification de la classe "active-icon" de l'icône
-      expect(mailIcon.className).toBe("active-icon");
-    });
+
+  // Test : Vérification de l'affichage du titre de la page
+  test("Then title text content should be displayed", async () => {
+    // Navigation vers la page NewBill
+    window.onNavigate(ROUTES_PATH.NewBill);
+    // Assertion : Vérification de l'existence du texte "Envoyer une note de frais"
+    expect(screen.getAllByText("Envoyer une note de frais")).toBeTruthy();
+  });
+  // Test : Vérification de la mise en surbrillance de l'icône de messagerie dans la disposition verticale
+  test("Then mail icon in vertical layout should be highlighted", async () => {
+    // Navigation vers la page NewBill
+    window.onNavigate(ROUTES_PATH.NewBill);
+    // Attente de l'affichage de l'icône mail
+    await waitFor(() => screen.getByTestId("icon-mail"));
+    const mailIcon = screen.getByTestId("icon-mail");
+    // Assertion : Vérification de la classe "active-icon" de l'icône
+    expect(mailIcon.className).toBe("active-icon");
   });
 });
 
-describe("Given I am connected as an employee and I am on the NewBill page", () => {
+// Tests pour la page NewBill en tant qu'employé connecté avec des interactions sur le formulaire
+describe("Given I am connected as an employee on the NewBill page", () => {
   let newBill; // Déclaration d'une variable pour stocker l'instance de NewBill
   let onNavigateMock; // Déclaration d'une variable pour stocker une fonction mock de navigation
   beforeEach(() => {
@@ -143,8 +142,8 @@ describe("Given I am connected as an employee and I am on the NewBill page", () 
   });
 });
 
-// // Tests pour la soumission du formulaire avec des données valides
-describe("Given I submit the form with valid data", () => {
+// Suite de tests pour gérer les erreurs de l'API
+describe("When an error occurs on API", () => {
   beforeEach(() => {
     // Configuration de l'environnement de test
     document.body.innerHTML = "";
@@ -175,10 +174,8 @@ describe("Given I submit the form with valid data", () => {
       document.body.removeChild(root);
     }
   });
-  // Test pour  pour la soumission du formulaire avec des champs rempli
-
   // Tests pour la gestion d'une erreur de l'API
-  describe("When an error occurs on API", () => {
+  describe("Given a failed attempt to post bills to the API with a 404 error", () => {
     beforeEach(() => {
       // Espionne la méthode "bills" de l'objet mockStore
       jest.spyOn(mockStore, "bills");
@@ -205,7 +202,7 @@ describe("Given I submit the form with valid data", () => {
       // Initialise le router
       router();
     });
-    test("Then it should display an error message", async () => {
+    test("Then displays an error message on 404 response", async () => {
       // Création d'une erreur simulée
       const mockError = new Error("Erreur 404");
       console.error = jest.fn();
@@ -249,7 +246,8 @@ describe("Given I submit the form with valid data", () => {
   });
 });
 
-describe("Given I am connected as an employee 2", () => {
+// Suite de tests pour la saisie correcte d'une nouvelle note de frais
+describe("Given I am an employee connected and on the NewBill page", () => {
   let newBill; // Déclaration d'une variable pour stocker l'instance de NewBill
   beforeEach(() => {
     document.body.innerHTML = NewBillUI();
@@ -278,120 +276,64 @@ describe("Given I am connected as an employee 2", () => {
     // jest.spyOn(mockStore, "bills");
     // jest.spyOn(mockStore.bills(), "create").mockRejectedValue(new Error("Erreur lors de la création"));
   });
-  describe("When I am on the Newbill Page", () => {
-    describe("When I filled in correct format all the required fields", () => {
-      test("Then it should submit the form with file and navigate on Bills page", async () => {
-        // Remplir les champs du formulaire avec des données valides
-        const expenseTypeInput = screen.getByTestId("expense-type");
-        const expenseNameInput = screen.getByTestId("expense-name");
-        const datepickerInput = screen.getByTestId("datepicker");
-        const amountInput = screen.getByTestId("amount");
-        const vatInput = screen.getByTestId("vat");
-        const pctInput = screen.getByTestId("pct");
+  describe("When I filled in correct format all the required fields", () => {
+    test("Then the form should be submitted with a file and I should navigate to the Bills page", async () => {
+      // Remplir les champs du formulaire avec des données valides
+      const expenseTypeInput = screen.getByTestId("expense-type");
+      const expenseNameInput = screen.getByTestId("expense-name");
+      const datepickerInput = screen.getByTestId("datepicker");
+      const amountInput = screen.getByTestId("amount");
+      const vatInput = screen.getByTestId("vat");
+      const pctInput = screen.getByTestId("pct");
 
-        const fileInput = screen.getByTestId("file");
+      const fileInput = screen.getByTestId("file");
 
-        fireEvent.change(expenseTypeInput, { target: { value: "Transports" } });
-        fireEvent.change(expenseNameInput, {
-          target: { value: "Nom de la dépense" },
-        });
-        fireEvent.change(datepickerInput, { target: { value: "2023-12-20" } });
-        fireEvent.change(amountInput, { target: { value: "100" } });
-        fireEvent.change(vatInput, { target: { value: "20" } });
-        fireEvent.change(pctInput, { target: { value: "10" } });
-
-        // Simulation du téléchargement d'un fichier
-        const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-        const fileList = createFileList([file]);
-        Object.defineProperty(fileInput, "files", {
-          get: () => fileList,
-        });
-        const testHandleChangeFile = jest.fn((e) =>
-          newBill.handleChangeFile(e)
-        );
-        // Ajoutez un gestionnaire d'événement de changement de fichier
-        fileInput.addEventListener("change", testHandleChangeFile);
-
-        // Simulez le changement de fichier
-        fireEvent.change(fileInput);
-        await waitFor(() => userEvent.upload(fileInput, file));
-        // Espionner la méthode create de bills pour simuler une erreur
-        // jest.spyOn(mockStore.bills(), "create").mockRejectedValueOnce(new Error("Erreur lors de la création"));
-
-        // Soumission du formulaire
-        const form = screen.getByTestId("form-new-bill");
-        const testHandleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-        form.addEventListener("submit", testHandleSubmit);
-
-        fireEvent.submit(form);
-        // Attendre que la promesse rejetée soit gérée
-        // await waitFor(() => {
-        //   expect(console.error).toHaveBeenCalledWith(new Error("Erreur lors de la création"));
-        // });
-
-        // Vérifiez que handleSubmit a été appelée
-        expect(testHandleSubmit).toHaveBeenCalledTimes(1);
-        // Vérifiez que l'utilisateur est redirigé vers la page des factures
-        expect(screen.getByText("Mes notes de frais")).toBeTruthy();
+      fireEvent.change(expenseTypeInput, { target: { value: "Transports" } });
+      fireEvent.change(expenseNameInput, {
+        target: { value: "Nom de la dépense" },
       });
-      // test("Then it should handle file creation failure", async () => {
-      //   // Remplir les champs du formulaire avec des données valides
-      //   const expenseTypeInput = screen.getByTestId("expense-type");
-      //   const expenseNameInput = screen.getByTestId("expense-name");
-      //   const datepickerInput = screen.getByTestId("datepicker");
-      //   const amountInput = screen.getByTestId("amount");
-      //   const vatInput = screen.getByTestId("vat");
-      //   const pctInput = screen.getByTestId("pct");
+      fireEvent.change(datepickerInput, { target: { value: "2023-12-20" } });
+      fireEvent.change(amountInput, { target: { value: "100" } });
+      fireEvent.change(vatInput, { target: { value: "20" } });
+      fireEvent.change(pctInput, { target: { value: "10" } });
 
-      //   const fileInput = screen.getByTestId("file");
+      // Simulation du téléchargement d'un fichier
+      const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
+      const fileList = createFileList([file]);
+      Object.defineProperty(fileInput, "files", {
+        get: () => fileList,
+      });
+      const testHandleChangeFile = jest.fn((e) => newBill.handleChangeFile(e));
+      // Ajoutez un gestionnaire d'événement de changement de fichier
+      fileInput.addEventListener("change", testHandleChangeFile);
 
-      //   fireEvent.change(expenseTypeInput, { target: { value: "Transports" } });
-      //   fireEvent.change(expenseNameInput, {
-      //     target: { value: "Nom de la dépense" },
-      //   });
-      //   fireEvent.change(datepickerInput, { target: { value: "2023-12-20" } });
-      //   fireEvent.change(amountInput, { target: { value: "100" } });
-      //   fireEvent.change(vatInput, { target: { value: "20" } });
-      //   fireEvent.change(pctInput, { target: { value: "10" } });
+      // Simulez le changement de fichier
+      fireEvent.change(fileInput);
+      await waitFor(() => userEvent.upload(fileInput, file));
+      // Espionner la méthode create de bills pour simuler une erreur
+      // jest.spyOn(mockStore.bills(), "create").mockRejectedValueOnce(new Error("Erreur lors de la création"));
 
-      //   // Simulation du téléchargement d'un fichier
-      //   const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-      //   const fileList = createFileList([file]);
-      //   Object.defineProperty(fileInput, "files", {
-      //     get: () => fileList,
-      //   });
-      //   const testHandleChangeFile = jest.fn((e) =>
-      //     newBill.handleChangeFile(e)
-      //   );
-      //   // Ajoutez un gestionnaire d'événement de changement de fichier
-      //   fileInput.addEventListener("change", testHandleChangeFile);
+      // Soumission du formulaire
+      const form = screen.getByTestId("form-new-bill");
+      const testHandleSubmit = jest.fn((e) => newBill.handleSubmit(e));
+      form.addEventListener("submit", testHandleSubmit);
 
-      //   // Simulez le changement de fichier
-      //   fireEvent.change(fileInput);
-      //   await waitFor(() => userEvent.upload(fileInput, file));
-      //   // Espionner la méthode create de bills pour simuler une erreur
-      //   jest.spyOn(mockStore.bills(), "create").mockRejectedValueOnce(new Error("Erreur lors de la création"));
-
-      //   // Soumission du formulaire
-      //   const form = screen.getByTestId("form-new-bill");
-      //   const testHandleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-      //   form.addEventListener("submit", testHandleSubmit);
-
-      //   fireEvent.submit(form);
-      //   // Attendre que la promesse rejetée soit gérée
-      //   await waitFor(() => {
-      //     expect(console.error).toHaveBeenCalledWith(new Error("Erreur lors de la création"));
-      //   });
-
-      //   // Vérifiez que handleSubmit a été appelée
-      //   expect(testHandleSubmit).toHaveBeenCalledTimes(1);
-      //   // Vérifiez que l'utilisateur est redirigé vers la page des factures
-      //   expect(screen.getByText("Mes notes de frais")).toBeTruthy();
+      fireEvent.submit(form);
+      // Attendre que la promesse rejetée soit gérée
+      // await waitFor(() => {
+      //   expect(console.error).toHaveBeenCalledWith(new Error("Erreur lors de la création"));
       // });
+
+      // Vérifiez que handleSubmit a été appelée
+      expect(testHandleSubmit).toHaveBeenCalledTimes(1);
+      // Vérifiez que l'utilisateur est redirigé vers la page des factures
+      expect(screen.getByText("Mes notes de frais")).toBeTruthy();
     });
   });
 });
-describe("Given I am connected as an employee 3", () => {
+
+// Suite de tests pour gérer une erreur lors de la soumission d'une nouvelle note de frais
+describe("Given I encounter an error while submitting a new bill", () => {
   let newBill; // Déclaration d'une variable pour stocker l'instance de NewBill
   beforeEach(() => {
     document.body.innerHTML = NewBillUI();
@@ -418,65 +360,13 @@ describe("Given I am connected as an employee 3", () => {
     jest.spyOn(newBill, "updateBill");
     jest.spyOn(window, "onNavigate");
     jest.spyOn(mockStore, "bills");
-    jest.spyOn(mockStore.bills(), "create").mockRejectedValue(new Error("Erreur lors de la création"));
+    jest
+      .spyOn(mockStore.bills(), "create")
+      .mockRejectedValue(new Error("Erreur lors de la création"));
   });
   describe("When I am on the Newbill Page", () => {
     describe("When I filled in incorrect format all the required fields", () => {
-      // test("Then it should submit the form with file and navigate on Bills page", async () => {
-      //   // Remplir les champs du formulaire avec des données valides
-      //   const expenseTypeInput = screen.getByTestId("expense-type");
-      //   const expenseNameInput = screen.getByTestId("expense-name");
-      //   const datepickerInput = screen.getByTestId("datepicker");
-      //   const amountInput = screen.getByTestId("amount");
-      //   const vatInput = screen.getByTestId("vat");
-      //   const pctInput = screen.getByTestId("pct");
-
-      //   const fileInput = screen.getByTestId("file");
-
-      //   fireEvent.change(expenseTypeInput, { target: { value: "Transports" } });
-      //   fireEvent.change(expenseNameInput, {
-      //     target: { value: "Nom de la dépense" },
-      //   });
-      //   fireEvent.change(datepickerInput, { target: { value: "2023-12-20" } });
-      //   fireEvent.change(amountInput, { target: { value: "100" } });
-      //   fireEvent.change(vatInput, { target: { value: "20" } });
-      //   fireEvent.change(pctInput, { target: { value: "10" } });
-
-      //   // Simulation du téléchargement d'un fichier
-      //   const file = new File(["img"], "image.jpg", { type: "image/jpeg" });
-      //   const fileList = createFileList([file]);
-      //   Object.defineProperty(fileInput, "files", {
-      //     get: () => fileList,
-      //   });
-      //   const testHandleChangeFile = jest.fn((e) =>
-      //     newBill.handleChangeFile(e)
-      //   );
-      //   // Ajoutez un gestionnaire d'événement de changement de fichier
-      //   fileInput.addEventListener("change", testHandleChangeFile);
-
-      //   // Simulez le changement de fichier
-      //   fireEvent.change(fileInput);
-      //   await waitFor(() => userEvent.upload(fileInput, file));
-      //   // Espionner la méthode create de bills pour simuler une erreur
-      //   // jest.spyOn(mockStore.bills(), "create").mockRejectedValueOnce(new Error("Erreur lors de la création"));
-
-      //   // Soumission du formulaire
-      //   const form = screen.getByTestId("form-new-bill");
-      //   const testHandleSubmit = jest.fn((e) => newBill.handleSubmit(e));
-      //   form.addEventListener("submit", testHandleSubmit);
-
-      //   fireEvent.submit(form);
-      //   // Attendre que la promesse rejetée soit gérée
-      //   // await waitFor(() => {
-      //   //   expect(console.error).toHaveBeenCalledWith(new Error("Erreur lors de la création"));
-      //   // });
-
-      //   // Vérifiez que handleSubmit a été appelée
-      //   expect(testHandleSubmit).toHaveBeenCalledTimes(1);
-      //   // Vérifiez que l'utilisateur est redirigé vers la page des factures
-      //   expect(screen.getByText("Mes notes de frais")).toBeTruthy();
-      // });
-      test("Then it should handle file creation failure", async () => {
+      test("Then it should handle file creation failure and display an error message ", async () => {
         // Remplir les champs du formulaire avec des données valides
         const expenseTypeInput = screen.getByTestId("expense-type");
         const expenseNameInput = screen.getByTestId("expense-name");
@@ -512,7 +402,9 @@ describe("Given I am connected as an employee 3", () => {
         fireEvent.change(fileInput);
         await waitFor(() => userEvent.upload(fileInput, file));
         // Espionner la méthode create de bills pour simuler une erreur
-        jest.spyOn(mockStore.bills(), "create").mockRejectedValueOnce(new Error("Erreur lors de la création"));
+        jest
+          .spyOn(mockStore.bills(), "create")
+          .mockRejectedValueOnce(new Error("Erreur lors de la création"));
 
         // Soumission du formulaire
         const form = screen.getByTestId("form-new-bill");
@@ -522,7 +414,9 @@ describe("Given I am connected as an employee 3", () => {
         fireEvent.submit(form);
         // Attendre que la promesse rejetée soit gérée
         await waitFor(() => {
-          expect(console.error).toHaveBeenCalledWith(new Error("Erreur lors de la création"));
+          expect(console.error).toHaveBeenCalledWith(
+            new Error("Erreur lors de la création")
+          );
         });
 
         // Vérifiez que handleSubmit a été appelée
