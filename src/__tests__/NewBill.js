@@ -143,7 +143,7 @@ describe("Given I am connected as an employee on the NewBill page", () => {
 });
 
 // Suite de tests pour gérer les erreurs 404 de l'API
-describe("When an error 404 occurs on API", () => {
+describe("When an error 400 occurs on API", () => {
   beforeEach(() => {
     // Configuration de l'environnement de test
     document.body.innerHTML = "";
@@ -245,7 +245,7 @@ describe("When an error 404 occurs on API", () => {
   });
 });
 // Suite de tests pour gérer les erreurs 500 de l'API
-describe("When an error 500 occurs on API 2", () => {
+describe("When an error 500 occurs on API", () => {
   beforeEach(() => {
     // Configuration de l'environnement de test
     document.body.innerHTML = "";
