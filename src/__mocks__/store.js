@@ -1,7 +1,12 @@
+// Définition d'un objet contenant des méthodes simulées pour la gestion des factures
 const mockedBills = {
+  // Méthode de simulation pour récupérer une liste de factures
   list() {
+    // Retourne une promesse résolue avec un tableau de factures simulées
     return Promise.resolve([
+      // Facture simulée 1
       {
+        // Propriétés de la facture
         id: "47qAXb6fIm2zOKkLzMro",
         vat: "80",
         fileUrl:
@@ -17,7 +22,9 @@ const mockedBills = {
         email: "a@a",
         pct: 20,
       },
+      // Facture simulée 2
       {
+        // Propriétés de la facture
         id: "BeKy5Mo4jkmdfPGYpTxZ",
         vat: "",
         amount: 100,
@@ -33,7 +40,9 @@ const mockedBills = {
         status: "refused",
         commentAdmin: "en fait non",
       },
+      // Facture simulée 3
       {
+        // Propriétés de la facture
         id: "UIUZtnPQvnbFnB0ozvJh",
         name: "test3",
         email: "a@a",
@@ -50,7 +59,9 @@ const mockedBills = {
         fileUrl:
           "https://test.storage.tld/v0/b/billable-677b6.a…dur.png?alt=media&token=571d34cb-9c8f-430a-af52-66221cae1da3",
       },
+      // Facture simulée 4
       {
+        // Propriétés de la facture
         id: "qcCK3SzECmaZAGRrHjaC",
         status: "refused",
         pct: 20,
@@ -68,14 +79,19 @@ const mockedBills = {
       },
     ]);
   },
+  // Méthode de simulation pour créer une facture
   create(bill) {
+    // Retourne une promesse résolue avec un objet simulé représentant la création d'une facture
     return Promise.resolve({
       fileUrl: "https://localhost:3456/images/test.jpg",
       key: "1234",
     });
   },
+  // Méthode de simulation pour mettre à jour une facture
   update(bill) {
+    // Retourne une promesse résolue avec un objet simulé représentant la mise à jour d'une facture
     return Promise.resolve({
+      // Autres propriétés de la facture mises à jour
       id: "47qAXb6fIm2zOKkLzMro",
       vat: "80",
       fileUrl:
@@ -93,9 +109,10 @@ const mockedBills = {
     });
   },
 };
-
+// Exporte un objet contenant les méthodes simulées pour la gestion des factures
 export default {
   bills() {
+    // Méthode pour récupérer les méthodes simulées des factures
     return mockedBills;
     //return {}
   },
