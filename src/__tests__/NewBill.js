@@ -164,7 +164,6 @@ describe("When an error occurs on API", () => {
     document.body.append(root);
     router();
   });
-
   afterEach(() => {
     // Réinitialisation de l'environnement de test
     document.body.innerHTML = NewBillUI();
