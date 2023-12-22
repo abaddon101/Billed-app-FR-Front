@@ -185,7 +185,7 @@ export default class {
 
     // console.log("Counter:", this.counter); // Affiche la valeur actuelle de counter dans la console
     // console.log("Index:", this.index); // Affiche la valeur actuelle de l'index dans la console
-
+    // debugger;
     // Détacher les gestionnaires d'événements existants sur les éléments avec la classe 'open-bill'
     $(`#status-bills-container${this.index}`).off("click", ".open-bill");
 
